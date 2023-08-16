@@ -183,7 +183,10 @@ void GripperActionController<HardwareInterface>::check_for_success(
 
       if (params_.allow_stalling)
       {
-        RCLCPP_DEBUG(get_node()->get_logger(), "Stall detected moving to goal. Returning success.");
+        RCLCPP_DEBUG_STREAM(get_node()->get_logger(), "Stall detected while moving to goal. Returning success and holding position to " << current_position);
+        command_struct_.position_ = current_position;
+        command_struct_.max_effort_ = params_.max_effort;
+        command_.writeFromNonRT(command_struct_);
         active_goal->setSucceeded(pre_alloc_result_);
       }
       else
